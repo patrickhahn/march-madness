@@ -32,7 +32,7 @@ class Game:
                 advance_probs[team] = half1_arrive[team] * self.win_prob(team, half2_arrive)
             for team in self.half2:
                 advance_probs[team] = half2_arrive[team] * self.win_prob(team, half1_arrive)
-            assert abs(sum(advance_probs.values()) - 1) < 0.01, "Distribution must sum to 1!"
+            # assert abs(sum(advance_probs.values()) - 1) < 0.01, "Distribution must sum to 1! %f" % sum(advance_probs.values())
             self.advance_probs = advance_probs
             return advance_probs
 
@@ -88,11 +88,12 @@ def main():
             teams.append(row[0])
             team_seeds[row[0]] = float(row[1])
 
-    h2h_model = model.LogRegModel(teams)
+    h2h_model = model.LogRegModel(teams, '2016')
+    h2h_model.train()
 
-    # bracket = Game(teams, h2h_model)
-    # bracket.calculate_probs()
-    # bracket.predict_winners("")
-    # print_winners(bracket)
+    bracket = Game(teams, h2h_model)
+    bracket.calculate_probs()
+    bracket.predict_winners("")
+    print_winners(bracket)
 
 if __name__ == "__main__": main()
