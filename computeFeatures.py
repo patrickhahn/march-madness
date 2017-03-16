@@ -3,7 +3,7 @@ import csv
 
 # Load id numbers for each team
 team_ids = dict()
-with open('data/Teams.csv') as f:
+with open('kaggledata/Teams.csv') as f:
     reader = csv.DictReader(f)
     for row in reader:
         team_ids[row['Team_Name']] = row['Team_Id']
@@ -12,13 +12,13 @@ with open('data/Teams.csv') as f:
 seasons = ['2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016']
 
 # Compute statistics for each team in each season to use as model features
-with open('data/TeamFeatures.csv', 'w') as fout:
+with open('kaggledata/TeamFeatures.csv', 'w') as fout:
     fieldnames = ['Season','Team','Id','WinPct','PPG','OppPPG','3PAPG','3PPct','FTPG','FTPct','OffReboundPct','DefReboundPct','AstPG','ToPG','StPG','BlkPG','FoulPG']
     writer = csv.DictWriter(fout, fieldnames=fieldnames)
     writer.writeheader()
 
     for year in seasons:
-        with open('data/RegularSeasonDetailedResults.csv') as fin:
+        with open('kaggledata/RegularSeasonDetailedResults.csv') as fin:
             reader = csv.DictReader(fin)
             season = [row for row in reader if row['Season'] == year]
             for team, tid in team_ids.iteritems():
