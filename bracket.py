@@ -32,7 +32,7 @@ class Game:
                 advance_probs[team] = half1_arrive[team] * self.win_prob(team, half2_arrive)
             for team in self.half2:
                 advance_probs[team] = half2_arrive[team] * self.win_prob(team, half1_arrive)
-            # assert abs(sum(advance_probs.values()) - 1) < 0.01, "Distribution must sum to 1! %f" % sum(advance_probs.values())
+            assert abs(sum(advance_probs.values()) - 1) < 0.01, "Distribution must sum to 1! %f" % sum(advance_probs.values())
             self.advance_probs = advance_probs
             return advance_probs
 
@@ -42,7 +42,12 @@ class Game:
         # it to this game
         win_prob = 0
         for opponent, arrival_prob in opponents_arrive.iteritems():
-            win_prob += arrival_prob * self.h2h_model.win_prob(team, opponent)
+            # calculating win probabilities both ways and dividing by sum ensures
+            # probability distributions will sum to one
+            teamwin = self.h2h_model.win_prob(team, opponent)
+            oppwin = self.h2h_model.win_prob(opponent,team)
+            h2hwin = teamwin / (teamwin + oppwin)
+            win_prob += arrival_prob * h2hwin
         return win_prob
 
     def predict_winners(self, parent_winner):
@@ -88,7 +93,7 @@ def main():
             teams.append(row[0])
             team_seeds[row[0]] = float(row[1])
 
-    h2h_model = model.LogRegModel(teams, '2016')
+    h2h_model = model.DecisionTreeModel(teams, '2016')
     h2h_model.train()
 
     bracket = Game(teams, h2h_model)
